@@ -92,6 +92,7 @@ export default function ImportPage({ onCommit, onBack }: ImportPageProps) {
               setHeavy(Boolean(next && next.size > 80 * 1024 * 1024));
             }}
           />
+          <p className="import-hint">Safari 更稳的是 m4a / mp3 / mp4</p>
           {heavy ? <p className="import-hint">可能较卡</p> : null}
           <button type="button" className="solid" disabled={!file} onClick={() => setStep(2)}>
             下一步

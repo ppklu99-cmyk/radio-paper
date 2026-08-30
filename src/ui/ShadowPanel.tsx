@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { pickPraise } from "../lib/praise";
+import { speakPraise } from "../lib/speakPraise";
 
 type ShadowPanelProps = {
   ratio: number;
@@ -24,9 +25,13 @@ export default function ShadowPanel({
   const [recording, setRecording] = useState(false);
   const [praise, setPraise] = useState<string | null>(null);
   const [selfUrl, setSelfUrl] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState(false);
+  const [blocked, setBlocked] = useState<string | null>(null);
 
   async function start() {
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+      setBlocked("请用 Safari 打开 https://zhiben.xyz 再录音。http 地址系统不给麦克风。");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mime = pickMime();
@@ -42,18 +47,26 @@ export default function ShadowPanel({
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
         if (selfUrl) URL.revokeObjectURL(selfUrl);
         setSelfUrl(URL.createObjectURL(blob));
-        setPraise((last) => pickPraise(ratio < 0.7 ? "messy" : "afterShadow", last ?? undefined));
         onShadowed();
       };
       recorderRef.current = recorder;
+      if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
       recorder.start();
       setRecording(true);
-    } catch {
-      setBlocked(true);
+    } catch (error) {
+      const name = error instanceof DOMException ? error.name : "";
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setBlocked("麦克风被拒绝了。到 设置 → Safari → 麦克风，允许后再点录音。");
+        return;
+      }
+      setBlocked("这次没录上。听写还可以继续。");
     }
   }
 
   function stop() {
+    const line = pickPraise(ratio < 0.7 ? "messy" : "afterShadow", praise ?? undefined);
+    setPraise(line);
+    speakPraise(line);
     recorderRef.current?.stop();
     setRecording(false);
   }
@@ -68,7 +81,7 @@ export default function ShadowPanel({
     <div className="shadow">
       <p className="session-remain">跟读（可跳过）</p>
       {blocked ? (
-        <p className="banner">听写还可以继续</p>
+        <p className="banner">{blocked}</p>
       ) : (
         <div className="actions">
           <button type="button" className="solid" onClick={recording ? stop : start}>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { isVideoSrc } from "../lib/media";
+import { pickPraise } from "../lib/praise";
+import { speakPraise } from "../lib/speakPraise";
 import { diffWords, firstLetterHint, shouldAutoBionic } from "../lib/text";
 import { translateSentence } from "../lib/translate";
 import type { SentenceChunk } from "../lib/types";
@@ -53,6 +55,7 @@ export default function DictationPage({
   const [zhError, setZhError] = useState("");
   const [copied, setCopied] = useState(false);
   const [showZh, setShowZh] = useState(false);
+  const [stopPraise, setStopPraise] = useState<string | null>(null);
   const showVideo = wide && isVideoSrc(mediaSrc) && !videoHidden;
   const atFirst = chunk.index <= 1;
   const atLast = chunk.index >= chunkCount;
@@ -222,10 +225,18 @@ export default function DictationPage({
 
       {showMilestoneCheck ? (
         <div className="milestone-check">
-          <HandCheck checked={chunk.isCompleted} onCheck={onCheck} />
+          <HandCheck
+            checked={chunk.isCompleted}
+            onCheck={() => {
+              const line = pickPraise("stop", stopPraise ?? undefined);
+              setStopPraise(line);
+              speakPraise(line);
+              onCheck();
+            }}
+          />
           {chunk.isCompleted ? (
             <div className="dictation-win">
-              <p className="dictation-win-copy">一句就够了。</p>
+              <p className="dictation-win-copy">{stopPraise ?? "一句就够了。"}</p>
               <div className="dictation-win-actions">
                 <button type="button" className="solid" onClick={onMore}>
                   再来一句
