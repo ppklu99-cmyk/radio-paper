@@ -1,0 +1,499 @@
+@font-face {
+  font-family: "HarmonyOS Sans SC";
+  src: url("/fonts/HarmonyOS_Sans_SC_Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HarmonyOS Sans SC";
+  src: url("/fonts/HarmonyOS_Sans_SC_Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Merriweather;
+  src: url("/fonts/Merriweather-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Merriweather;
+  src: url("/fonts/Merriweather-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --paper: #f6efe3;
+  --ink: #1b2a4a;
+  --accent: #c23b22;
+  --line: color-mix(in srgb, var(--ink) 14%, transparent);
+  --ui: "HarmonyOS Sans SC", "PingFang SC", "Noto Sans SC", sans-serif;
+  --voice: Merriweather, "Source Han Serif SC", "Songti SC", serif;
+  --space: 1.25rem;
+  --card: 18px;
+  --control: 10px;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.page {
+  min-height: 100dvh;
+  padding: 2rem 1.4rem 3rem;
+}
+
+.stack {
+  width: min(36rem, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.home {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+}
+
+.home-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.home-actions {
+  display: flex;
+  gap: 1.25rem;
+  padding-left: 0.15rem;
+}
+
+.lesson-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 1.6rem 1.5rem 1.45rem;
+  text-align: center;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--card);
+}
+
+.lesson-card-title {
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.lesson-card-meta,
+.lesson-card-progress {
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--ink) 58%, var(--paper));
+}
+
+.quiet {
+  background: none;
+  border: none;
+  padding: 0.15rem 0;
+  font-size: 0.92rem;
+  color: color-mix(in srgb, var(--ink) 58%, var(--paper));
+}
+
+.quiet.faint {
+  opacity: 0.72;
+}
+
+.quiet:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.banner {
+  margin: 0;
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--ink) 62%, var(--paper));
+}
+
+.dictation,
+.import,
+.settings {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+.dictation.has-video {
+  width: min(46rem, 100%);
+}
+
+.dictation-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.session-remain,
+.import-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: color-mix(in srgb, var(--ink) 55%, var(--paper));
+}
+
+.session-nudge {
+  margin: 0;
+}
+
+.nav-glyph {
+  font-size: 1.15rem;
+  letter-spacing: 0;
+  min-width: 1.4rem;
+}
+
+.zh-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.sentence-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  width: 100%;
+}
+
+.sentence-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+}
+
+.sentence-jump select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  padding: 0.2rem 0.4rem;
+}
+
+.sentence-zh {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--ink) 72%, var(--paper));
+}
+
+.chunk-player {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+  width: 100%;
+}
+
+.dictation-audio {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.chunk-player-video {
+  width: 100%;
+  max-height: 40vh;
+  border-radius: var(--card);
+  background: var(--ink);
+}
+
+.chunk-player-play {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--control);
+  background: var(--paper);
+}
+
+.chunk-player-play-icon {
+  display: block;
+}
+
+.english {
+  margin: 0;
+  font-family: var(--voice);
+  font-size: 1.28rem;
+  line-height: 1.65;
+}
+
+.dictation-hint {
+  letter-spacing: 0.03em;
+}
+
+.bionic-text strong {
+  font-weight: 700;
+}
+
+.diff-ok {
+  color: var(--ink);
+}
+
+.diff-miss,
+.diff-wrong {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.dictation-input,
+.field,
+.import-list {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--control);
+  background: var(--paper);
+  padding: 0.9rem 1rem;
+}
+
+.dictation-input {
+  min-height: 7.2rem;
+  font-family: var(--voice);
+  font-size: 1.12rem;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.field {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.row-field {
+  min-height: 0;
+  width: 100%;
+}
+
+.actions,
+.dictation-win-actions,
+.import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.9rem 1.2rem;
+}
+
+.solid {
+  border: none;
+  border-radius: var(--control);
+  padding: 0.55rem 1.1rem;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.dictation-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: color-mix(in srgb, var(--ink) 58%, var(--paper));
+}
+
+.dictation-switch input {
+  accent-color: var(--accent);
+}
+
+.milestone-check {
+  width: 100%;
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hand-check-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.hand-check {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.hand-check.is-checked {
+  animation: check-settle 0.35s ease-out;
+}
+
+.hand-check-svg {
+  display: block;
+}
+
+.hand-check-svg path {
+  stroke: var(--ink);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hand-check-mark {
+  stroke-dasharray: 42;
+  stroke-dashoffset: 42;
+  animation: draw-check 0.45s ease-out forwards;
+}
+
+.dictation-win,
+.shadow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.milestone-check .dictation-win {
+  align-items: center;
+}
+
+.dictation-win-copy,
+.shadow-praise {
+  margin: 0;
+  font-family: var(--voice);
+  font-size: 1.2rem;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.import-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.import-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.import-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.import-item-text {
+  margin: 0;
+  font-family: var(--voice);
+  font-size: 1.02rem;
+}
+
+.sync-code {
+  margin: 0;
+  font-family: var(--voice);
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+}
+
+@keyframes draw-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes check-settle {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hand-check.is-checked,
+  .hand-check-mark {
+    animation: none;
+  }
+
+  .hand-check-mark {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .home-row {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1.2rem;
+  }
+
+  .lesson-card {
+    flex: 1;
+  }
+
+  .home-actions {
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-bottom: 0.2rem;
+  }
+}
