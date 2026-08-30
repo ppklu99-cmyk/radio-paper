@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pickEnglishFemaleVoice } from "../src/lib/speakPraise";
+import { pickEnglishFemaleVoice, shapePraiseSpeech, splitPraisePhrases } from "../src/lib/speakPraise";
 
 function voice(name: string, lang: string): SpeechSynthesisVoice {
   return { name, lang, default: false, localService: true, voiceURI: name } as SpeechSynthesisVoice;
@@ -27,5 +27,30 @@ describe("pickEnglishFemaleVoice", () => {
       voice("Daniel", "en-GB"),
     ]);
     expect(chosen?.name).toBe("Tingting");
+  });
+});
+
+describe("splitPraisePhrases", () => {
+  it("keeps a short line whole", () => {
+    expect(splitPraisePhrases("That landed.")).toEqual(["That landed."]);
+  });
+
+  it("splits sentences and em dashes", () => {
+    expect(splitPraisePhrases("You held the pace. I like that.")).toEqual([
+      "You held the pace.",
+      "I like that.",
+    ]);
+    expect(splitPraisePhrases("Noted — and well said.")).toEqual([
+      "Noted",
+      "and well said.",
+    ]);
+  });
+});
+
+describe("shapePraiseSpeech", () => {
+  it("joins clauses with a spoken pause", () => {
+    expect(shapePraiseSpeech("You held the pace. I like that.")).toBe(
+      "You held the pace. … I like that.",
+    );
   });
 });

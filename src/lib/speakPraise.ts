@@ -26,6 +26,19 @@ function isFemale(voice: SpeechSynthesisVoice): boolean {
   return FEMALE_HINT.test(label);
 }
 
+export function splitPraisePhrases(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+|\s*[—–]\s*/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+export function shapePraiseSpeech(text: string): string {
+  const parts = splitPraisePhrases(text);
+  if (parts.length <= 1) return text;
+  return parts.join(" … ");
+}
+
 export function pickEnglishFemaleVoice(
   voices: SpeechSynthesisVoice[],
 ): SpeechSynthesisVoice | null {
@@ -48,10 +61,10 @@ function pauseLessonMedia() {
 function speakNow(text: string) {
   const voice = pickEnglishFemaleVoice(speechSynthesis.getVoices());
   if (!voice) return;
-  const utterance = new SpeechSynthesisUtterance(text);
+  const utterance = new SpeechSynthesisUtterance(shapePraiseSpeech(text));
   utterance.lang = voice.lang.startsWith("zh") ? "en-US" : voice.lang;
-  utterance.rate = 0.92;
-  utterance.pitch = 1.05;
+  utterance.rate = 0.84;
+  utterance.pitch = 1;
   utterance.voice = voice;
   speechSynthesis.speak(utterance);
 }
