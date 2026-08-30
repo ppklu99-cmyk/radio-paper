@@ -15,26 +15,12 @@ function lanUrl(port: number): string {
 }
 
 const PORT = 5173;
-const PAGES_URL = "https://ppklu99-cmyk.github.io/radio-paper/";
+const PAGES_URL = "https://zhiben.xyz/";
 const onPages = process.env.GITHUB_PAGES === "true";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    ...(onPages
-      ? [
-          {
-            name: "prefix-public-fonts",
-            apply: "build" as const,
-            transform(code: string, id: string) {
-              if (!id.replaceAll("\\", "/").endsWith("src/styles/tokens.css")) return;
-              return code.replaceAll('url("/fonts/', 'url("/radio-paper/fonts/');
-            },
-          },
-        ]
-      : []),
-  ],
-  base: onPages ? "/radio-paper/" : "/",
+  plugins: [react()],
+  base: "/",
   define: {
     __LAN_URL__: JSON.stringify(onPages ? PAGES_URL : lanUrl(PORT)),
   },
