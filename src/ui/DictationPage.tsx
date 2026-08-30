@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { isVideoSrc } from "../lib/media";
 import { pickPraise } from "../lib/praise";
-import { speakPraise } from "../lib/speakPraise";
 import { diffWords, firstLetterHint, shouldAutoBionic } from "../lib/text";
 import { translateSentence } from "../lib/translate";
 import type { SentenceChunk } from "../lib/types";
@@ -230,7 +229,6 @@ export default function DictationPage({
             onCheck={() => {
               const line = pickPraise("stop", stopPraise ?? undefined);
               setStopPraise(line);
-              speakPraise(line);
               onCheck();
             }}
           />

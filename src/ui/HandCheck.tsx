@@ -1,3 +1,5 @@
+import { playCheckSound } from "../lib/checkSound";
+
 type HandCheckProps = {
   checked: boolean;
   onCheck: () => void;
@@ -12,7 +14,9 @@ export default function HandCheck({ checked, onCheck }: HandCheckProps) {
         aria-pressed={checked}
         aria-label="勾上完成"
         onClick={() => {
-          if (!checked) onCheck();
+          if (checked) return;
+          playCheckSound();
+          onCheck();
         }}
       >
         <svg
