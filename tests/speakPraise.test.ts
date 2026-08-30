@@ -15,15 +15,17 @@ describe("pickEnglishFemaleVoice", () => {
     expect(chosen?.name).toBe("Samantha");
   });
 
-  it("falls back to any English voice", () => {
+  it("does not pick a male English voice", () => {
+    expect(
+      pickEnglishFemaleVoice([voice("Daniel", "en-GB"), voice("Alex", "en-US")]),
+    ).toBeNull();
+  });
+
+  it("uses a female Chinese voice rather than a male English one", () => {
     const chosen = pickEnglishFemaleVoice([
       voice("Tingting", "zh-CN"),
       voice("Daniel", "en-GB"),
     ]);
-    expect(chosen?.name).toBe("Daniel");
-  });
-
-  it("returns null when there is no English voice", () => {
-    expect(pickEnglishFemaleVoice([voice("Tingting", "zh-CN")])).toBeNull();
+    expect(chosen?.name).toBe("Tingting");
   });
 });

@@ -6,10 +6,24 @@ const PREFERRED = [
   "Moira",
   "Tessa",
   "Serena",
+  "Victoria",
+  "Allison",
+  "Ava",
+  "Susan",
+  "Flo",
 ];
+
+const FEMALE_HINT = /female|zira|samantha|karen|moira|tessa|serena|victoria|allison|tingting|yaoyao|huihui|meijia|ting-ting|xiao/i;
+const MALE_HINT = /male|alex|daniel|david|fred|tom\b|ralph|bruce|albert|aaron|james|mark|george/i;
 
 function isEnglish(voice: SpeechSynthesisVoice): boolean {
   return /^en\b/i.test(voice.lang);
+}
+
+function isFemale(voice: SpeechSynthesisVoice): boolean {
+  const label = `${voice.name} ${voice.voiceURI}`;
+  if (MALE_HINT.test(label) && !FEMALE_HINT.test(label)) return false;
+  return FEMALE_HINT.test(label);
 }
 
 export function pickEnglishFemaleVoice(
@@ -20,8 +34,9 @@ export function pickEnglishFemaleVoice(
     const hit = english.find((voice) => voice.name.includes(name));
     if (hit) return hit;
   }
-  const namedFemale = english.find((voice) => /female|zira|samantha|karen|moira/i.test(voice.name));
-  return namedFemale ?? english[0] ?? null;
+  const englishFemale = english.find(isFemale);
+  if (englishFemale) return englishFemale;
+  return voices.find(isFemale) ?? null;
 }
 
 function pauseLessonMedia() {
@@ -31,12 +46,13 @@ function pauseLessonMedia() {
 }
 
 function speakNow(text: string) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = 0.92;
-  utterance.pitch = 0.95;
   const voice = pickEnglishFemaleVoice(speechSynthesis.getVoices());
-  if (voice) utterance.voice = voice;
+  if (!voice) return;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = voice.lang.startsWith("zh") ? "en-US" : voice.lang;
+  utterance.rate = 0.92;
+  utterance.pitch = 1.05;
+  utterance.voice = voice;
   speechSynthesis.speak(utterance);
 }
 
