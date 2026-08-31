@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { isVideoSrc } from "../lib/media";
 import { pickPraise } from "../lib/praise";
-import { diffWords, firstLetterHint, shouldAutoBionic } from "../lib/text";
+import { diffWords, firstLetterHint, shouldAutoBionic, suggestSplit } from "../lib/text";
 import { translateSentence } from "../lib/translate";
 import type { SentenceChunk } from "../lib/types";
 import BionicText from "./BionicText";
@@ -24,6 +24,9 @@ export type DictationPageProps = {
   onPrev: () => void;
   onNext: () => void;
   onJump: (index: number) => void;
+  onMergePrev: () => void;
+  onMergeNext: () => void;
+  onSplit: (leftText: string, rightText: string) => void;
 };
 
 export default function DictationPage({
@@ -41,6 +44,9 @@ export default function DictationPage({
   onPrev,
   onNext,
   onJump,
+  onMergePrev,
+  onMergeNext,
+  onSplit,
 }: DictationPageProps) {
   const phase: "listen" | "check" = revealed ? "check" : "listen";
   const [showHint, setShowHint] = useState(true);
@@ -55,10 +61,14 @@ export default function DictationPage({
   const [copied, setCopied] = useState(false);
   const [showZh, setShowZh] = useState(false);
   const [stopPraise, setStopPraise] = useState<string | null>(null);
+  const [splitting, setSplitting] = useState(false);
+  const [leftText, setLeftText] = useState("");
+  const [rightText, setRightText] = useState("");
   const showVideo = wide && isVideoSrc(mediaSrc) && !videoHidden;
   const atFirst = chunk.index <= 1;
   const atLast = chunk.index >= chunkCount;
   const showMilestoneCheck = chunk.index % 5 === 0;
+  const splitHint = suggestSplit(chunk.text);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -71,6 +81,8 @@ export default function DictationPage({
   useEffect(() => {
     setShowHint(true);
     setBionicOn(shouldAutoBionic(chunk.text));
+    setStopPraise(null);
+    setSplitting(false);
     setCopied(false);
     setShowZh(false);
     setZh("");
@@ -126,6 +138,62 @@ export default function DictationPage({
           {copied ? "✓" : "⎘"}
         </button>
       </div>
+
+      <div className="chunk-edit">
+        <button type="button" className="quiet" disabled={atFirst} onClick={onMergePrev}>
+          并上句
+        </button>
+        <button type="button" className="quiet" disabled={atLast} onClick={onMergeNext}>
+          并下句
+        </button>
+        {splitting ? (
+          <button type="button" className="quiet" onClick={() => setSplitting(false)}>
+            取消拆开
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="quiet"
+            disabled={!splitHint}
+            onClick={() => {
+              if (!splitHint) return;
+              setLeftText(splitHint.left);
+              setRightText(splitHint.right);
+              setSplitting(true);
+            }}
+          >
+            拆开
+          </button>
+        )}
+      </div>
+
+      {splitting ? (
+        <div className="split-fields">
+          <textarea
+            className="field row-field"
+            value={leftText}
+            onChange={(event) => setLeftText(event.target.value)}
+            aria-label="拆开后的上半句"
+          />
+          <textarea
+            className="field row-field"
+            value={rightText}
+            onChange={(event) => setRightText(event.target.value)}
+            aria-label="拆开后的下半句"
+          />
+          <button
+            type="button"
+            className="solid"
+            disabled={!leftText.trim() || !rightText.trim()}
+            onClick={() => {
+              onSplit(leftText.trim(), rightText.trim());
+              setSplitting(false);
+            }}
+          >
+            确认拆开
+          </button>
+        </div>
+      ) : null}
 
       <ChunkPlayer
         src={mediaSrc}

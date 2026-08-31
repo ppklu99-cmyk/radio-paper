@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { buildChunks, isLongChunk, mergeChunks, splitChunk } from "../lib/chunks";
+import { silenceTimesFromFile } from "../lib/silenceDetect";
 import { splitSentences, tokenize } from "../lib/text";
 import type { Lesson, SentenceChunk } from "../lib/types";
 
@@ -57,7 +58,8 @@ export default function ImportPage({ onCommit, onBack }: ImportPageProps) {
     setError("");
     const durationSec = await readDuration(file);
     const lessonId = `import-${Date.now()}`;
-    setChunks(buildChunks(lessonId, text, durationSec));
+    const silenceTimes = await silenceTimesFromFile(file);
+    setChunks(buildChunks(lessonId, text, durationSec, Date.now(), silenceTimes));
     setStep(3);
   }
 

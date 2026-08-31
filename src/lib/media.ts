@@ -10,5 +10,5 @@ export function shouldSeekToStart(
   startTime: number,
   endTime: number,
 ): boolean {
-  return currentTime >= endTime - 0.05 || currentTime < startTime;
+  return currentTime >= endTime - 0.02 || currentTime < startTime - 0.02;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { tokenize, diffWords, firstLetterHint, bionicParts, shouldAutoBionic, splitSentences } from "../src/lib/text";
+import { tokenize, diffWords, firstLetterHint, bionicParts, shouldAutoBionic, splitSentences, suggestSplit } from "../src/lib/text";
 
 describe("tokenize", () => {
   it("lowercases and strips punctuation", () => {
@@ -49,5 +49,25 @@ describe("splitSentences", () => {
       "Did he?",
       "Yes!",
     ]);
+  });
+});
+
+describe("suggestSplit", () => {
+  it("splits merged sentences on the first period", () => {
+    expect(suggestSplit("Hi there. Next one.")).toEqual({
+      left: "Hi there.",
+      right: "Next one.",
+    });
+  });
+
+  it("splits a single sentence at the middle word", () => {
+    expect(suggestSplit("one two three four")).toEqual({
+      left: "one two",
+      right: "three four",
+    });
+  });
+
+  it("returns null when there is only one word", () => {
+    expect(suggestSplit("Hello.")).toBeNull();
   });
 });

@@ -74,3 +74,14 @@ export function splitSentences(text: string): string[] {
     })
     .filter(Boolean);
 }
+
+export function suggestSplit(text: string): { left: string; right: string } | null {
+  const sentences = splitSentences(text);
+  if (sentences.length >= 2) {
+    return { left: sentences[0], right: sentences.slice(1).join(" ") };
+  }
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  if (words.length < 2) return null;
+  const mid = Math.floor(words.length / 2);
+  return { left: words.slice(0, mid).join(" "), right: words.slice(mid).join(" ") };
+}

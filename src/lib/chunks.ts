@@ -1,4 +1,5 @@
 import { splitSentences } from "./text";
+import { allocateWindows, padWindows, snapToValleys, spokenWeight } from "./timing";
 import type { SentenceChunk } from "./types";
 
 function blankFields(now: number) {
@@ -15,23 +16,23 @@ export function buildChunks(
   text: string,
   durationSec: number,
   now = Date.now(),
+  silenceTimes: number[] = [],
 ): SentenceChunk[] {
   const sentences = splitSentences(text);
-  const totalChars = sentences.reduce((sum, sentence) => sum + sentence.length, 0);
-  let cursor = 0;
+  const weights = sentences.map((sentence) => spokenWeight(sentence));
+  let windows = allocateWindows(weights, durationSec);
+  if (silenceTimes.length) windows = snapToValleys(windows, silenceTimes, 1.4);
+  windows = padWindows(windows, durationSec);
   return sentences.map((sentence, i) => {
     const index = i + 1;
-    const startTime = cursor;
-    const share = totalChars === 0 ? 0 : sentence.length / totalChars;
-    const endTime = i === sentences.length - 1 ? durationSec : cursor + share * durationSec;
-    cursor = endTime;
+    const window = windows[i] ?? { start: 0, end: durationSec };
     return {
       id: `${lessonId}-${index}`,
       lessonId,
       index,
       text: sentence,
-      startTime,
-      endTime,
+      startTime: window.start,
+      endTime: window.end,
       ...blankFields(now),
     };
   });
@@ -64,6 +65,8 @@ export function mergeChunks(
     ...left,
     text: `${left.text} ${right.text}`,
     endTime: right.endTime,
+    userInput: [left.userInput, right.userInput].filter(Boolean).join(" "),
+    isCompleted: left.isCompleted && right.isCompleted,
     updatedAt: now,
   };
   const next = [...chunks.slice(0, leftIndex), merged, ...chunks.slice(leftIndex + 2)];
@@ -78,7 +81,11 @@ export function splitChunk(
   now = Date.now(),
 ): SentenceChunk[] {
   const target = chunks[index];
-  const mid = (target.startTime + target.endTime) / 2;
+  const leftW = spokenWeight(leftText);
+  const rightW = spokenWeight(rightText);
+  const span = target.endTime - target.startTime;
+  const mid =
+    target.startTime + (span * leftW) / Math.max(leftW + rightW, 1);
   const shared = {
     lessonId: target.lessonId,
     ...blankFields(now),

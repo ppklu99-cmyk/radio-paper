@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_CHUNKS, SAMPLE_LESSON } from "./data/sampleLesson";
 import { unlockAudio } from "./lib/audioUnlock";
+import { mergeChunks, splitChunk } from "./lib/chunks";
 import { getFile, loadLocal, rememberFile, saveLocal } from "./lib/db";
 import { hydrateSample } from "./lib/hydrateSample";
 import { shouldNudgeStop } from "./lib/sessionTimer";
@@ -114,6 +115,19 @@ export default function App() {
       updatedAt: Date.now(),
     };
     void persist(next);
+  }
+
+  function replaceChunks(nextChunks: SentenceChunk[], stayAtIndex: number) {
+    const next: SyncDocument = {
+      ...doc,
+      chunks: nextChunks,
+      updatedAt: Date.now(),
+    };
+    void persist(next);
+    const stay =
+      nextChunks.find((chunk) => chunk.index === stayAtIndex) ?? nextChunks[0];
+    if (stay) setCurrentId(stay.id);
+    setRevealed(false);
   }
 
   function goHome() {
@@ -262,6 +276,21 @@ export default function App() {
                 if (!target) return;
                 setCurrentId(target.id);
                 setRevealed(false);
+              }}
+              onMergePrev={() => {
+                const leftIndex = current.index - 2;
+                if (leftIndex < 0) return;
+                replaceChunks(mergeChunks(chunks, leftIndex), leftIndex + 1);
+              }}
+              onMergeNext={() => {
+                const leftIndex = current.index - 1;
+                if (leftIndex < 0 || leftIndex >= chunks.length - 1) return;
+                replaceChunks(mergeChunks(chunks, leftIndex), current.index);
+              }}
+              onSplit={(leftText, rightText) => {
+                const index = current.index - 1;
+                if (index < 0) return;
+                replaceChunks(splitChunk(chunks, index, leftText, rightText), current.index);
               }}
             />
           ) : (

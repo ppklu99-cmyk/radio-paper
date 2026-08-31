@@ -19,9 +19,9 @@ describe("isVideoSrc", () => {
 });
 
 describe("shouldSeekToStart", () => {
-  it("seeks at endTime minus 0.05", () => {
-    expect(shouldSeekToStart(9.95, 0, 10)).toBe(true);
-    expect(shouldSeekToStart(9.94, 0, 10)).toBe(false);
+  it("seeks at endTime minus 0.02", () => {
+    expect(shouldSeekToStart(9.98, 0, 10)).toBe(true);
+    expect(shouldSeekToStart(9.97, 0, 10)).toBe(false);
   });
 
   it("seeks when currentTime is before startTime", () => {
